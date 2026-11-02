@@ -127,11 +127,12 @@ The script installs PyInstaller if needed and writes `dist\ConversationalGlasses
 
 ```powershell
 pyinstaller --noconfirm --onefile --name ConversationalGlasses `
+  --paths src `
   --add-data "yolov8n.pt;." `
   --add-data "config.py;." `
   --hidden-import ultralytics `
   --hidden-import torch --hidden-import torchvision --hidden-import torchaudio `
-  --collect-all ultralytics --collect-all numpy --collect-all cv2 `
+  --collect-all ultralytics --collect-all torchvision --collect-all numpy --collect-all cv2 `
   src/main.py
 ```
 
@@ -197,14 +198,17 @@ Measured on a Windows 11 laptop, **CPU only** (Intel, 16 threads, no GPU), PyTor
 
 Inference is about 95% of the frame time, so a GPU or an exported ONNX/OpenVINO model is where further speed would come from.
 
-**Speech latency:**
+**Speech latency** (close-obstacle warning, from `tts.speak()` to first audio at the Windows output meter, CPU inference running, 15 trials per case, speaker delay not included):
 
-| Case | Time until speech starts |
+| Case | First audio (median) |
 |---|---|
-| New close obstacle ahead while another sentence is playing | **< 1 ms** after detection (current sentence is cut off) |
-| Normal scene change | after the 3 s cooldown, once the current sentence finishes |
+| Nothing else playing | **~480 ms** |
+| Cutting off a sentence that is playing | **~860 ms** |
+| Cutting off a sentence with a normal message also waiting | **~930 ms** |
 
-From the camera seeing a new obstacle to the warning starting is therefore about one frame (~40 ms), not counting the camera's own sensor delay.
+The handoff to the speech engine is quick (0.1 ms, or up to 33 ms when a normal message is waiting). Most of the delay is inside SAPI, which stops the current sentence and starts the new one. Separate runs varied, from about 0.2 s to one 1.7 s outlier.
+
+A close obstacle within 1 s of the previous announcement also waits out the rest of that second. A normal scene change waits for the 3 s cooldown and for the current sentence to finish.
 
 ## Project structure
 

@@ -39,7 +39,7 @@ def resource_path(relative_path: str) -> str:
         return os.path.join(base_path, relative_path)
     return os.path.abspath(relative_path)
 
-MODEL_PATH = ROOT_MODEL_PATH or resource_path("yolov8n.pt")
+MODEL_PATH = resource_path(ROOT_MODEL_PATH or "yolov8n.pt")
 CONF_THRESHOLD = 0.70
 IOU_THRESHOLD = 0.50
 IMG_SIZE = 640

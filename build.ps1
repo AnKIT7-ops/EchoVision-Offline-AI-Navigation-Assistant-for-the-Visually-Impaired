@@ -17,11 +17,13 @@ $common = @(
     '--noconfirm',
     '--onefile',
     '--name', 'ConversationalGlasses',
+    '--paths', 'src',
     '--add-data', 'yolov8n.pt;.',
     '--add-data', 'config.py;.',
     '--hidden-import', 'ultralytics',
     '--hidden-import', 'torch', '--hidden-import', 'torchvision', '--hidden-import', 'torchaudio',
     '--collect-all', 'ultralytics',
+    '--collect-all', 'torchvision',
     '--collect-all', 'numpy',
     '--collect-all', 'cv2'
 )
